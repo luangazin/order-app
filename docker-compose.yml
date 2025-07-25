@@ -1,0 +1,53 @@
+name: order-app
+
+services:
+
+  order-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: orders-app
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/order_app
+      - SPRING_REDIS_HOST=redis
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - order-network
+    restart: unless-stopped
+    profiles:
+      - complete
+
+  postgres:
+    image: postgres:17
+    container_name: order-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: order_app
+    ports:
+      - "5432:5432"
+    volumes:
+      - order-postgres_data:/var/lib/postgresql/data
+      - ./sql:/docker-entrypoint-initdb.d/
+    networks:
+      - order-network
+
+  redis:
+    image: redis:8
+    container_name: order-redis
+    ports:
+      - "6379:6379"
+    command: redis-server --save 20 1 --loglevel warning
+    networks:
+      - order-network
+
+volumes:
+  order-postgres_data:
+networks:
+  order-network:
+    driver: bridge
