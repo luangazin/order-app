@@ -1,0 +1,42 @@
+logging:
+  level:
+    br.com.gazintech.orderapp: TRACE
+
+spring:
+  application:
+    name: order-app
+  datasource:
+    url: jdbc:postgresql://localhost:5432/order_app
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      minimum-idle: 5
+      maximum-pool-size: 10
+      idle-timeout: 30000
+      max-lifetime: 1800000
+      connection-timeout: 20000
+      pool-name: HikariPool
+  data:
+    redis:
+      host: localhost
+      port: 6379
+#      password: redis123
+      timeout: 2000ms
+      connect-timeout: 2000ms
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 8
+          min-idle: 0
+  jpa:
+    hibernate:
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+      ddl-auto: create
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+
+
