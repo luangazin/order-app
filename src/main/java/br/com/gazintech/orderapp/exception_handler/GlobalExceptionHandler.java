@@ -1,7 +1,6 @@
-package br.com.gazintech.orderapp;
+package br.com.gazintech.orderapp.exception_handler;
 
 import br.com.gazintech.orderapp.api.ApiResponse;
-import br.com.gazintech.orderapp.exception_handler.ExceptionHandlerList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
