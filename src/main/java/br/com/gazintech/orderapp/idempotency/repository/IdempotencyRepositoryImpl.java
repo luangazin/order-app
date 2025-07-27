@@ -28,7 +28,8 @@ public class IdempotencyRepositoryImpl implements IdempotencyRepository {
     public Optional<IdempotencyCache> getCache(UUID idempotencyKey) {
         String redisKey = getRedisKey(idempotencyKey);
         logger.debug("Fetching idempotency key from Redis: {}", redisKey);
-        return redisTemplate.findById(redisKey, IdempotencyCache.class);
+        var reposne = redisTemplate.findById(redisKey, IdempotencyCache.class);
+        return reposne;
     }
 
     /**

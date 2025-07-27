@@ -1,5 +1,6 @@
-package br.com.gazintech.orderapp.api;
+package br.com.gazintech.orderapp;
 
+import br.com.gazintech.orderapp.api.ApiResponse;
 import br.com.gazintech.orderapp.exception_handler.ExceptionHandlerList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +29,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<Void>> handleException(Throwable exception) {
         log.error("An error occurred: {}", exception.getMessage(), exception);
         var item = exceptionHandlerList.findByException(exception);
-        log.trace(item.toString());
-        return ApiResponse.<Void>builder().error(item.getErrorCode(), item.getMessage(), item.getStatus()).build();
+        log.trace("Exception handler item found: {}", item);
+        return ApiResponse.<Void>builder().error(item.errorCode(), item.isShowOriginalMessage() ? exception.getMessage() : item.message(), item.status()).build();
     }
 }

@@ -3,13 +3,13 @@ package br.com.gazintech.orderapp.idempotency;
 import br.com.gazintech.orderapp.exception.IdempotencyKeyNotFoundException;
 import br.com.gazintech.orderapp.idempotency.repository.IdempotencyCache;
 import br.com.gazintech.orderapp.idempotency.repository.IdempotencyRepository;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -17,36 +17,42 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import java.util.Optional;
 import java.util.UUID;
 
+@RequiredArgsConstructor
+@Slf4j
 @Aspect
 @Component
 public class IdempotencyAspect {
 
-    private static final Logger logger = LoggerFactory.getLogger(IdempotencyAspect.class);
-
-    @Autowired
-    private IdempotencyRepository repository; // Inject the Redis template
+    private final IdempotencyRepository repository; // Inject the Redis template
 
     @Around("@annotation(Idempotent) && execution(* *(..))")
     public Object handleIdempotency(ProceedingJoinPoint joinPoint) throws Throwable {
-        logger.trace("Idempotency aspect triggered");
+        log.trace("Idempotency aspect triggered");
         MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
         Idempotent idempotent = methodSignature.getMethod().getAnnotation(Idempotent.class);
         String idempotencyKeyHeader = this.getIdempotencyKeyHeader(idempotent);
         UUID idempotencyKey = UUID.fromString(idempotencyKeyHeader);
 
-        logger.trace("Idempotency-Key: {}", idempotencyKey);
+        log.trace("X-Idempotency-Key: {}", idempotencyKey);
         Optional<IdempotencyCache> cacheItem = repository.getCache(idempotencyKey);
         if (cacheItem.isPresent()) {
-            logger.trace("Idempotency-Key found in cache: {}, return response", idempotencyKey);
-            return cacheItem.get().getResponse();
+            IdempotencyCache.ResponseData responseData = cacheItem.get().getResponse();
+            log.trace("X-Idempotency-Key found in cache: {}, return response", idempotencyKey);
+            return ResponseEntity.status(responseData.getStatus())
+                    .body(responseData.getBody());
         }
 
-        logger.trace("Idempotency-Key not found in cache: {}, proceed with method execution", idempotencyKey);
+        log.trace("X-Idempotency-Key not found in cache: {}, proceed with method execution", idempotencyKey);
         Object result = joinPoint.proceed();
+        if (result instanceof ResponseEntity<?> responseEntity) {
+            IdempotencyCache.ResponseData responseData = new IdempotencyCache.ResponseData(
+                    responseEntity.getBody(),
+                    responseEntity.getStatusCode()
+            );
+            repository.save(idempotencyKey, new IdempotencyCache(idempotencyKey, responseData, idempotent.cacheTimeSeconds()));
+        }
 
-        repository.save(idempotencyKey, new IdempotencyCache(idempotencyKey, result, idempotent.cacheTimeSeconds()));
-
-        logger.trace("Idempotency-Key saved in cache: {}.", idempotencyKey);
+        log.trace("X-Idempotency-Key saved in cache: {}.", idempotencyKey);
         return result;
     }
 
@@ -60,9 +66,9 @@ public class IdempotencyAspect {
         }
         var request = attributes.getRequest();
 
-        String idempotencyKeyHeader = request.getHeader("Idempotency-Key");
+        String idempotencyKeyHeader = request.getHeader("X-Idempotency-Key");
         if (idempotencyKeyHeader == null) {
-            throw new IdempotencyKeyNotFoundException("Idempotency-Key header is required");
+            throw new IdempotencyKeyNotFoundException("X-Idempotency-Key header is required");
         }
         return idempotencyKeyHeader;
     }

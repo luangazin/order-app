@@ -1,38 +1,41 @@
 package br.com.gazintech.orderapp.idempotency.repository;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.TimeToLive;
+import org.springframework.http.HttpStatusCode;
 
 import java.io.Serializable;
 import java.util.UUID;
 
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @RedisHash(value = "idempotency-cache")
 public class IdempotencyCache implements Serializable {
+
     @JsonProperty(value = "idempotency-key", required = true)
     private UUID idempotencyKey;
 
     @JsonProperty(value = "response", required = true)
-    private final transient Object response;
+    private ResponseData response;
 
     @TimeToLive
-    private final Long expirationInSeconds;
+    private Long expirationInSeconds;
 
-    public IdempotencyCache(UUID idempotencyKey, Object response, Long expirationInSeconds) {
-        this.idempotencyKey = idempotencyKey;
-        this.response = response;
-        this.expirationInSeconds = expirationInSeconds;
-    }
 
-    public UUID getIdempotencyKey() {
-        return idempotencyKey;
-    }
-
-    public Object getResponse() {
-        return response;
-    }
-
-    public Long getExpirationInSeconds() {
-        return expirationInSeconds;
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class ResponseData implements Serializable {
+        private Object body;
+        private HttpStatusCode status;
     }
 }
+
