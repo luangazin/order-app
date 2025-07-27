@@ -3,6 +3,7 @@ package br.com.gazintech.orderapp.api;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -32,10 +33,23 @@ public class ApiResponse<T> {
         SUCCESS, ERROR
     }
 
+    @Getter
     @JsonPropertyOrder({"total-items", "total-pages", "current-page"})
-    public record Pagination(@JsonProperty("total-items") long totalItems,
-                             @JsonProperty("total-pages") int totalPages,
-                             @JsonProperty("current-page") int currentPage) {
+    public static class Pagination {
+        @JsonProperty("total-items")
+        private Long totalItems;
+
+        @JsonProperty("total-pages")
+        private Integer totalPages;
+
+        @JsonProperty("current-page")
+        private Integer currentPage;
+
+        public Pagination(Long totalItems, Integer totalPages, Integer currentPage) {
+            this.totalItems = totalItems;
+            this.totalPages = totalPages;
+            this.currentPage = currentPage;
+        }
     }
 
     public static <T> ApiResponseBuilder<T> builder() {
@@ -53,9 +67,9 @@ public class ApiResponse<T> {
         private String errorMessage;
         private ApiResponse.Status status;
         private HttpStatus httpStatus = HttpStatus.OK;
-        private long paginationTotalItems = 0L;
-        private int paginationTotalPages = 0;
-        private int paginationCurrentPage = 0;
+        private Long paginationTotalItems;
+        private Integer paginationTotalPages;
+        private Integer paginationCurrentPage;
 
         public ApiResponseBuilder<T> body(T body) {
             this.body = body;
@@ -125,6 +139,9 @@ public class ApiResponse<T> {
         }
 
         public ApiResponseBuilder<T> pagination(Pageable page) {
+            if (page == null) {
+                return this;
+            }
             this.paginationTotalItems = page.getOffset();
             this.paginationTotalPages = page.getPageSize();
             this.paginationCurrentPage = page.getPageNumber() + 1;
@@ -137,7 +154,9 @@ public class ApiResponse<T> {
             response.setErrorCode(errorCode);
             response.setErrorMessage(errorMessage);
             response.setStatus(status != null ? status : ApiResponse.Status.SUCCESS);
-            response.setPagination(new Pagination(paginationTotalItems, paginationTotalPages, paginationCurrentPage));
+            if (paginationTotalItems != null || paginationTotalPages != null || paginationCurrentPage != null) {
+                response.setPagination(new Pagination(paginationTotalItems, paginationTotalPages, paginationCurrentPage));
+            }
             return ResponseEntity.status(httpStatus).body(response);
         }
     }

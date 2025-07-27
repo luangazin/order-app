@@ -1,11 +1,11 @@
 package br.com.gazintech.orderapp.utils;
 
 import br.com.gazintech.orderapp.exception.ReflectionException;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ReflectionUtils {
-
-    private ReflectionUtils() {
-    }
 
     public static Object getAnnotationValue(
             Class<?> clazz,
