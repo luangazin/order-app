@@ -1,9 +1,8 @@
 package br.com.gazintech.orderapp.service;
 
-import br.com.gazintech.orderapp.dto.OrderResponseDTO;
 import br.com.gazintech.orderapp.entity.Order;
 import br.com.gazintech.orderapp.entity.Partner;
-import br.com.gazintech.orderapp.notification.BroadcastSender;
+import br.com.gazintech.orderapp.notification.OrderStatusBroadcastSender;
 import br.com.gazintech.orderapp.repository.PartnerRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +14,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class NotificationService {
     private final PartnerRepository partnerRepository;
-    private final BroadcastSender broadcastSender;
+    private final OrderStatusBroadcastSender broadcastSender;
 
     @Async
     public void notifyOrderStatusChange(Order order, Order.OrderStatus previousStatus) {
@@ -31,7 +30,7 @@ public class NotificationService {
                 return;
             }
 
-            broadcastSender.sendNotification(new OrderResponseDTO(order), "chat");
+            broadcastSender.sendNotification(order.getId(), previousStatus, order.getStatus());
 
             log.info("Notification sent successfully for order {} to partner {}",
                     order.getId(), partner.getEmail());

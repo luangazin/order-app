@@ -4,12 +4,14 @@ import br.com.gazintech.orderapp.entity.Order;
 import br.com.gazintech.orderapp.exception.InvalidOrderStatusException;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+@Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class OrderStatusStateMachine {
     private static final Map<Order.OrderStatus, Set<Order.OrderStatus>> validTransitions = new EnumMap<>(Order.OrderStatus.class);
@@ -59,12 +61,18 @@ public class OrderStatusStateMachine {
      */
     public static void transitionTo(Order order, Order.OrderStatus newStatus) {
         if (order == null) {
+            log.error("Order cannot be null");
             throw new IllegalArgumentException("Order cannot be null");
         }
+
+        if (order.getStatus().equals(newStatus)) {
+            log.warn("Order is already in status: {}", newStatus);
+            throw new InvalidOrderStatusException("Order is already %s.".formatted(newStatus.name().toLowerCase()));
+        }
+
         if (!isValidTransition(order.getStatus(), newStatus)) {
-            throw new InvalidOrderStatusException(
-                    String.format("Cannot transition from %s to %s", order.getStatus(), newStatus)
-            );
+            log.error("Invalid transition from {} to {}", order.getStatus(), newStatus);
+            throw new InvalidOrderStatusException("Cannot transition from %s to %s".formatted(order.getStatus(), newStatus));
         }
         order.setStatus(newStatus);
     }

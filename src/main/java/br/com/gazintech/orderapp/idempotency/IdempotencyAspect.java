@@ -23,7 +23,7 @@ import java.util.UUID;
 @Component
 public class IdempotencyAspect {
 
-    private final IdempotencyRepository repository; // Inject the Redis template
+    private final IdempotencyRepository repository;
 
     @Around("@annotation(Idempotent) && execution(* *(..))")
     public Object handleIdempotency(ProceedingJoinPoint joinPoint) throws Throwable {
@@ -49,6 +49,7 @@ public class IdempotencyAspect {
                     responseEntity.getBody(),
                     responseEntity.getStatusCode()
             );
+            log.trace("Saving X-Idempotency-Key in cache: {}, response: {}", idempotencyKey, responseData);
             repository.save(idempotencyKey, new IdempotencyCache(idempotencyKey, responseData, idempotent.cacheTimeSeconds()));
         }
 

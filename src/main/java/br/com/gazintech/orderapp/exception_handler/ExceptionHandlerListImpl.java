@@ -18,7 +18,7 @@ public class ExceptionHandlerListImpl implements ExceptionHandlerList {
         return List.of(
                 new ExceptionHandlerItem("E001", IdempotencyKeyNotFoundException.class, "Idempotency key not found", HttpStatus.BAD_REQUEST, "Tenant not found", false),
                 new ExceptionHandlerItem("E002", InsufficientBalanceException.class, "Insufficient Balance", HttpStatus.BAD_REQUEST, "Insufficient balance for the operation", false),
-                new ExceptionHandlerItem("E003", InvalidOrderStatusException.class, "Invalid Order status", HttpStatus.INTERNAL_SERVER_ERROR, "Invalid order status provided", false),
+                new ExceptionHandlerItem("E003", InvalidOrderStatusException.class, "Invalid Order status", HttpStatus.BAD_REQUEST, "Invalid order status provided", true),
                 new ExceptionHandlerItem("E004", ReflectionException.class, "Internal server error", HttpStatus.INTERNAL_SERVER_ERROR, "An error occurred while processing your request", false),
                 new ExceptionHandlerItem("E005", HttpRequestMethodNotSupportedException.class, "HTTP Method not supported", HttpStatus.METHOD_NOT_ALLOWED, "The requested HTTP method is not supported for this endpoint.", true),
                 new ExceptionHandlerItem("E006", MissingRequestHeaderException.class, "Missing Request Header", HttpStatus.BAD_REQUEST, "Required request header is missing or invalid.", true),

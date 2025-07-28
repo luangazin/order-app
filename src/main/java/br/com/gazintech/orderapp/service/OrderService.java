@@ -8,7 +8,6 @@ import br.com.gazintech.orderapp.entity.Order;
 import br.com.gazintech.orderapp.entity.Partner;
 import br.com.gazintech.orderapp.exception.OrderNotFoundException;
 import br.com.gazintech.orderapp.exception.PartnerNotFoundException;
-import br.com.gazintech.orderapp.notification.BroadcastSender;
 import br.com.gazintech.orderapp.repository.OrderRepository;
 import br.com.gazintech.orderapp.repository.PartnerRepository;
 import br.com.gazintech.orderapp.utils.OrderStatusStateMachine;
@@ -30,7 +29,7 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final PartnerRepository partnerRepository;
     private final CreditService creditService;
-    private final BroadcastSender broadcastSender;
+    private final NotificationService notificationService;
 
     @Transactional
     public OrderResponseDTO createOrder(OrderPostRequestDTO orderDTO) {
@@ -54,7 +53,6 @@ public class OrderService {
         Order savedOrder = orderRepository.save(order);
 
         log.info("Order created successfully with ID: {}", savedOrder.getId());
-        broadcastSender.sendNotification(new OrderResponseDTO(order), "messageQueue");
 
         return new OrderResponseDTO(savedOrder);
     }
@@ -64,7 +62,7 @@ public class OrderService {
         log.info("Fetching order by ID: {}", id);
 
         Order order = orderRepository.findById(id)
-                .orElseThrow(() -> new OrderNotFoundException("Order not found: " + id));
+                .orElseThrow(() -> new OrderNotFoundException("Order not found: %s".formatted(id)));
 
         return new OrderResponseDTO(order);
     }
@@ -95,21 +93,11 @@ public class OrderService {
 
         log.info("Order {} status updated from {} to {}", id, oldStatus, newStatus);
 
-//        notificationService.notifyOrderStatusChange(updatedOrder, oldStatus);
+        notificationService.notifyOrderStatusChange(order, oldStatus);
 
         return new OrderResponseDTO(updatedOrder);
     }
 
-    //    public Page<OrderResponseDTO> searchOrders(OrderSearchDTO searchDTO) {
-//        log.info("Searching orders with criteria: {}", searchDTO);
-//
-//        Pageable pageable = createPageable(searchDTO);
-//        Page<Order> orders;
-//
-//
-//
-//        return orders.map(orderMapper::toDTO);
-//    }
     @Transactional
     @CacheEvict(value = "orders", key = "#id")
     public void cancelOrder(UUID id) {
@@ -117,10 +105,11 @@ public class OrderService {
 
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new OrderNotFoundException("Order not found: " + id));
+        Order.OrderStatus oldStatus = order.getStatus();
         order.cancel();
         log.info("Order {} status changed to CANCELED", id);
         orderRepository.save(order);
-        broadcastSender.sendNotification(new OrderResponseDTO(order), "messageQueue");
+        notificationService.notifyOrderStatusChange(order, oldStatus);
     }
 
     public Page<OrderResponseDTO> searchOrders(OrderSearchDTO searchDTO) {
