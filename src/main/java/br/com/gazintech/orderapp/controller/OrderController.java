@@ -89,12 +89,12 @@ public class OrderController {
                 .sortDirection(sortDirection)
                 .build();
 
-        Page<OrderResponseDTO> orders = orderService.searchOrders(searchDTO);
+        Page<OrderResponseDTO> pageResult = orderService.searchOrders(searchDTO);
 
         return br.com.gazintech.orderapp.api.ApiResponse.<List<OrderResponseDTO>>builder()
                 .success()
-                .body(orders.getContent())
-                .pagination(orders.getPageable())
+                .body(pageResult.getContent())
+                .pagination(pageResult)
                 .build();
     }
 

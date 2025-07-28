@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -138,13 +139,13 @@ public class ApiResponse<T> {
             return this;
         }
 
-        public ApiResponseBuilder<T> pagination(Pageable page) {
+        public ApiResponseBuilder<T> pagination(Page<?> page) {
             if (page == null) {
                 return this;
             }
-            this.paginationTotalItems = page.getOffset();
-            this.paginationTotalPages = page.getPageSize();
-            this.paginationCurrentPage = page.getPageNumber() + 1;
+            this.paginationTotalItems = page.getTotalElements();
+            this.paginationTotalPages = page.getTotalPages();
+            this.paginationCurrentPage = page.getNumber() + 1;
             return this;
         }
 
