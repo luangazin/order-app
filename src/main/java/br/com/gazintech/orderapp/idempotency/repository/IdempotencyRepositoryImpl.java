@@ -1,6 +1,7 @@
 package br.com.gazintech.orderapp.idempotency.repository;
 
 
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,9 +15,9 @@ import java.util.UUID;
  * Implementation of the IdempotencyRepository interface using Redis as the storage mechanism.
  * This class provides methods to retrieve and save idempotency cache entries.
  */
+@Slf4j
 @Component
 public class IdempotencyRepositoryImpl implements IdempotencyRepository {
-    private static final Logger logger = LoggerFactory.getLogger(IdempotencyRepositoryImpl.class);
 
     private final RedisKeyValueTemplate redisTemplate;
 
@@ -31,9 +32,8 @@ public class IdempotencyRepositoryImpl implements IdempotencyRepository {
     @Override
     public Optional<IdempotencyCache> getCache(UUID idempotencyKey) {
         String redisKey = getRedisKey(idempotencyKey);
-        logger.debug("Fetching idempotency key from Redis: {}", redisKey);
-        var reposne = redisTemplate.findById(redisKey, IdempotencyCache.class);
-        return reposne;
+        log.debug("Fetching idempotency key from Redis: {}", redisKey);
+        return  redisTemplate.findById(redisKey, IdempotencyCache.class);
     }
 
     /**
@@ -42,7 +42,7 @@ public class IdempotencyRepositoryImpl implements IdempotencyRepository {
     @Override
     public void save(UUID idempotencyKey, IdempotencyCache idempotency) {
         String redisKey = getRedisKey(idempotencyKey);
-        logger.debug("Creating idempotency key in Redis: {} with TTL: {}", redisKey, idempotency.getExpirationInSeconds());
+        log.debug("Creating idempotency key in Redis: {} with TTL: {}", redisKey, idempotency.getExpirationInSeconds());
         redisTemplate.update(redisKey, idempotency);
     }
 

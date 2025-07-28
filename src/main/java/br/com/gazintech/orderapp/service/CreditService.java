@@ -14,6 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.UUID;
 
+import static net.logstash.logback.argument.StructuredArguments.kv;
+
 /**
  * Service for managing partner credit operations.
  * Provides methods to check, debit, credit, and update credit limits for partners.
@@ -35,15 +37,15 @@ public class CreditService {
      */
     @Cacheable(value = "partner-credit", key = "#partnerId")
     public void hasAvailableCredit(UUID partnerId, BigDecimal amount) throws PartnerNotFoundException, InsufficientBalanceException {
-        log.info("Checking available credit for partner {} amount {}", partnerId, amount);
+        log.info("Checking available Partner credit", kv("partnerId", partnerId), kv("amount", amount));
 
         Partner partner = partnerRepository.findById(partnerId)
-                .orElseThrow(() -> new PartnerNotFoundException("Partner not found: " + partnerId));
+                .orElseThrow(() -> new PartnerNotFoundException("Partner not found %s".formatted(partnerId)));
 
         boolean hasCredit = partner.hasAvailableCredit(amount);
         log.info("Partner {} has available credit: {}", partnerId, hasCredit);
         if (!hasCredit) {
-            throw new InsufficientBalanceException("Insufficient credit for partner: " + partner.getCode());
+            throw new InsufficientBalanceException("Insufficient credit for partner: %s".formatted(partner.getCode()));
         }
     }
 

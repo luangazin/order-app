@@ -13,6 +13,7 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 @Getter
 @Builder
 public class OrderSearchDTO implements Serializable {

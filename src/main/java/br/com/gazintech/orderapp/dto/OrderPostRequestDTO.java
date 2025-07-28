@@ -16,6 +16,7 @@ import java.util.UUID;
 
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 @Builder
 @Getter
 @Setter
@@ -32,6 +33,7 @@ public class OrderPostRequestDTO implements Serializable {
      */
     @NoArgsConstructor
     @AllArgsConstructor
+    @ToString
     @Builder
     @Getter
     @Setter

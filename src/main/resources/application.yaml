@@ -1,4 +1,6 @@
 logging:
+  pattern:
+    console: '{"timestamp":"%d{yyyy-MM-dd HH:mm:ss.SSS}","level":"%level","thread":"%thread","logger":"%logger","message":"%message","mdc":"%X"}%n'
   level:
     br.com.gazintech.orderapp: TRACE
 
