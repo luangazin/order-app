@@ -62,7 +62,7 @@ public class OrderStatusStateMachine {
     public static void transitionTo(Order order, Order.OrderStatus newStatus) {
         if (order == null) {
             log.error("Order cannot be null");
-            throw new IllegalArgumentException("Order cannot be null");
+            throw new InvalidOrderStatusException("Order cannot be null");
         }
 
         if (order.getStatus().equals(newStatus)) {

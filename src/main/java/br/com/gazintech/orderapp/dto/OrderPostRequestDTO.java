@@ -3,10 +3,7 @@ package br.com.gazintech.orderapp.dto;
 import br.com.gazintech.orderapp.entity.Order;
 import br.com.gazintech.orderapp.entity.OrderItem;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -16,14 +13,14 @@ import java.util.UUID;
 /**
  * DTO for {@link Order}
  */
+
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Getter
 @Setter
 public class OrderPostRequestDTO implements Serializable {
 
-    @JsonProperty("id")
-    UUID id;
     @JsonProperty("partner-id")
     UUID partnerId;
 
@@ -35,6 +32,7 @@ public class OrderPostRequestDTO implements Serializable {
      */
     @NoArgsConstructor
     @AllArgsConstructor
+    @Builder
     @Getter
     @Setter
     public static class OrderItemDTO implements Serializable {
