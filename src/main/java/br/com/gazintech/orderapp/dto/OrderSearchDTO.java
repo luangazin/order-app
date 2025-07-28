@@ -2,20 +2,18 @@ package br.com.gazintech.orderapp.dto;
 
 import br.com.gazintech.orderapp.api.SortDirection;
 import br.com.gazintech.orderapp.entity.Order;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
 @Builder
 public class OrderSearchDTO implements Serializable {
 
@@ -25,9 +23,9 @@ public class OrderSearchDTO implements Serializable {
 
     private Order.OrderStatus status;
 
-    private LocalDateTime startDate;
+    private OffsetDateTime startDate;
 
-    private LocalDateTime endDate;
+    private OffsetDateTime endDate;
 
     private Integer page = 0;
 

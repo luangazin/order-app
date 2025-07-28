@@ -24,7 +24,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -64,15 +64,15 @@ public class OrderController {
     })
     @GetMapping
     public ResponseEntity<br.com.gazintech.orderapp.api.ApiResponse<List<OrderResponseDTO>>> searchOrders(
-            @Parameter(description = "Order ID") @RequestParam(required = false) UUID orderId,
-            @Parameter(description = "Partner ID") @RequestParam(required = false) UUID partnerId,
-            @Parameter(description = "Order Status") @RequestParam(required = false) Order.OrderStatus status,
-            @Parameter(description = "Start date") @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDateTime startDate,
-            @Parameter(description = "End date") @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDateTime endDate,
-            @Parameter(description = "Page number") @RequestParam(defaultValue = "0") int page,
-            @Parameter(description = "Page size") @RequestParam(defaultValue = "20") int size,
-            @Parameter(description = "Sort field") @RequestParam(defaultValue = "createdAt") String sortBy,
-            @Parameter(description = "Sort direction") @RequestParam(defaultValue = "DESC") SortDirection sortDirection) {
+            @Parameter(description = "Order ID") @RequestParam(name = "order-id", required = false) UUID orderId,
+            @Parameter(description = "Partner ID") @RequestParam(name = "partner-id", required = false) UUID partnerId,
+            @Parameter(description = "Order Status") @RequestParam(name = "status", required = false) Order.OrderStatus status,
+            @Parameter(description = "Start date") @RequestParam(name = "start-date", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) OffsetDateTime startDate,
+            @Parameter(description = "End date") @RequestParam(name = "end-date", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) OffsetDateTime endDate,
+            @Parameter(description = "Page number") @RequestParam(name = "page", defaultValue = "0") int page,
+            @Parameter(description = "Page size") @RequestParam(name = "size", defaultValue = "20") int size,
+            @Parameter(description = "Sort field") @RequestParam(name = "sort-by", defaultValue = "createdAt") String sortBy,
+            @Parameter(description = "Sort direction") @RequestParam(name = "sort-direction", defaultValue = "DESC") SortDirection sortDirection) {
 
         log.info("Searching orders with filters - status: {}, startDate: {}, endDate: {}",
                 status, startDate, endDate);
@@ -123,7 +123,7 @@ public class OrderController {
     @PatchMapping("/{id}/status")
     public ResponseEntity<br.com.gazintech.orderapp.api.ApiResponse<OrderResponseDTO>> updateOrderStatus(
             @Parameter(description = "Order id") @PathVariable UUID id,
-            @Parameter(description = "New status") @RequestParam Order.OrderStatus status) {
+            @Parameter(description = "New status", required = true) @RequestParam Order.OrderStatus status) {
 
         log.info("Updating order {} status to {}", id, status);
 

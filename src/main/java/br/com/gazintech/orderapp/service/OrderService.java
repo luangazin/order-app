@@ -10,6 +10,7 @@ import br.com.gazintech.orderapp.exception.OrderNotFoundException;
 import br.com.gazintech.orderapp.exception.PartnerNotFoundException;
 import br.com.gazintech.orderapp.repository.OrderRepository;
 import br.com.gazintech.orderapp.repository.PartnerRepository;
+import br.com.gazintech.orderapp.repository.specification.OrderSpecifications;
 import br.com.gazintech.orderapp.utils.OrderStatusStateMachine;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -89,13 +90,12 @@ public class OrderService {
             creditService.creditCredit(order.getPartner().getId(), order.getTotalValue());
         }
 
-        Order updatedOrder = orderRepository.save(order);
 
         log.info("Order {} status updated from {} to {}", id, oldStatus, newStatus);
 
         notificationService.notifyOrderStatusChange(order, oldStatus);
 
-        return new OrderResponseDTO(updatedOrder);
+        return new OrderResponseDTO(order);
     }
 
     @Transactional
@@ -108,17 +108,15 @@ public class OrderService {
         Order.OrderStatus oldStatus = order.getStatus();
         order.cancel();
         log.info("Order {} status changed to CANCELED", id);
-        orderRepository.save(order);
         notificationService.notifyOrderStatusChange(order, oldStatus);
     }
 
     public Page<OrderResponseDTO> searchOrders(OrderSearchDTO searchDTO) {
         log.info("Searching orders with criteria: {}", searchDTO);
 
-        // Fetch the orders from the repository
-        Page<Order> orders = orderRepository.searchOrders(searchDTO, searchDTO.toPageable());
+        Page<Order> orders = orderRepository.findAll(OrderSpecifications.bySearchDto(searchDTO), searchDTO.toPageable());
+        log.info("Found {} orders matching criteria", orders.getTotalElements());
 
-        // Convert the Page<Order> to Page<OrderResponseDTO>
         return orders.map(OrderResponseDTO::new);
     }
 }

@@ -15,7 +15,6 @@ import java.util.concurrent.Executor;
 @EnableCaching
 @EnableAsync
 @EnableTransactionManagement
-@EnableJpaAuditing
 public class OrderAppApplication {
 
     @Bean

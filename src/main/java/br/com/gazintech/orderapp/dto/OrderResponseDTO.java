@@ -3,22 +3,21 @@ package br.com.gazintech.orderapp.dto;
 import br.com.gazintech.orderapp.entity.Order;
 import br.com.gazintech.orderapp.entity.OrderItem;
 import br.com.gazintech.orderapp.entity.Partner;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 
 /**
  * DTO for {@link Order}
  */
+
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Getter
 @Setter
 public class OrderResponseDTO implements Serializable {
@@ -27,8 +26,8 @@ public class OrderResponseDTO implements Serializable {
     List<OrderItemDTO> items;
     BigDecimal totalValue;
     Order.OrderStatus status;
-    LocalDateTime createdAt;
-    LocalDateTime updatedAt;
+    OffsetDateTime createdAt;
+    OffsetDateTime updatedAt;
     Long version;
 
 
@@ -48,6 +47,7 @@ public class OrderResponseDTO implements Serializable {
      */
     @NoArgsConstructor
     @AllArgsConstructor
+    @Builder
     @Getter
     @Setter
     public static class OrderItemDTO implements Serializable {
@@ -68,6 +68,7 @@ public class OrderResponseDTO implements Serializable {
 
     @NoArgsConstructor
     @AllArgsConstructor
+    @Builder
     @Getter
     @Setter
     public static class PartnerDTO implements Serializable {
