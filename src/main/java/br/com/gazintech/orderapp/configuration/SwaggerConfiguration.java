@@ -17,19 +17,18 @@ public class SwaggerConfiguration {
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
                 .info(new Info()
-                        .title("Your API Title")
+                        .title("Order APP API")
                         .version("1.0.0")
-                        .description("API Description")
+                        .description("API for managing orders in the Order APP")
                         .contact(new Contact()
-                                .name("Your Name")
-                                .email("your.email@example.com")
-                                .url("https://yourwebsite.com"))
+                                .name("Luan Ricardo Gazin")
+                                .email("luan_gazin@yahoo.com.br")
+                                .url("https://www.linkedin.com/in/luangazin"))
                         .license(new License()
                                 .name("Apache 2.0")
                                 .url("https://www.apache.org/licenses/LICENSE-2.0")))
                 .servers(List.of(
-                        new Server().url("http://localhost:8080").description("Development server"),
-                        new Server().url("https://api.yourapp.com").description("Production server")
+                        new Server().url("http://localhost:8080").description("Local Server")
                 ));
     }
 }
