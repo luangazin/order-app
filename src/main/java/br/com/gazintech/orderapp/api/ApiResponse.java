@@ -9,6 +9,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+/**
+ * Generic API response class to standardize API responses across the application.
+ * It includes fields for the response body, error code, error message, status, and pagination information.
+ *
+ * @param <T>
+ */
 @Setter
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({"status", "error-code", "error-message", "body"})

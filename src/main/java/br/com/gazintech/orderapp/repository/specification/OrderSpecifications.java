@@ -9,9 +9,20 @@ import org.springframework.data.jpa.domain.Specification;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Specification class for filtering orders based on various criteria.
+ * This class provides a method to create a Specification for querying orders
+ * based on the fields present in the OrderSearchDTO.
+ */
 @NoArgsConstructor
 public class OrderSpecifications {
 
+    /**
+     * Creates a Specification for filtering orders based on the provided OrderSearchDTO.
+     *
+     * @param dto The OrderSearchDTO containing the search criteria.
+     * @return A Specification that can be used to filter orders.
+     */
     public static Specification<Order> bySearchDto(OrderSearchDTO dto) {
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();

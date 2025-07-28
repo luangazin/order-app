@@ -75,26 +75,43 @@ public class Order {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
+    // approve the order
     public void approve() {
         OrderStatusStateMachine.transitionTo(this, OrderStatus.APPROVED);
     }
 
+    // process the order
     public void process() {
         OrderStatusStateMachine.transitionTo(this, OrderStatus.PROCESSING);
     }
 
+    // ship the order
     public void ship() {
         OrderStatusStateMachine.transitionTo(this, OrderStatus.SHIPPED);
     }
 
+    // deliver the order
     public void deliver() {
         OrderStatusStateMachine.transitionTo(this, OrderStatus.DELIVERED);
     }
 
+    // cancel the order
     public void cancel() {
         OrderStatusStateMachine.transitionTo(this, OrderStatus.CANCELED);
     }
 
+    /**
+     * Enum representing the status of an order.
+     * <p>
+     * The order can be in one of the following states:
+     * - PENDING: The order has been created but not yet approved.
+     * - APPROVED: The order has been approved and is ready for processing.
+     * - PROCESSING: The order is being processed.
+     * - SHIPPED: The order has been shipped to the customer.
+     * - DELIVERED: The order has been delivered to the customer.
+     * - CANCELED: The order has been canceled.
+     * </p>
+     */
     public enum OrderStatus {
         PENDING,
         APPROVED,

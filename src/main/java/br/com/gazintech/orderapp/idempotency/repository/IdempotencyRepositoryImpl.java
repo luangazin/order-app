@@ -10,6 +10,10 @@ import org.springframework.stereotype.Component;
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * Implementation of the IdempotencyRepository interface using Redis as the storage mechanism.
+ * This class provides methods to retrieve and save idempotency cache entries.
+ */
 @Component
 public class IdempotencyRepositoryImpl implements IdempotencyRepository {
     private static final Logger logger = LoggerFactory.getLogger(IdempotencyRepositoryImpl.class);

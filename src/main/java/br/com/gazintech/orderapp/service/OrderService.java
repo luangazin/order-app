@@ -22,6 +22,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
+/**
+ * Service for managing orders.
+ * Provides methods to create, retrieve, update, and search orders.
+ */
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -32,8 +36,15 @@ public class OrderService {
     private final CreditService creditService;
     private final NotificationService notificationService;
 
+    /**
+     * Creates a new order for the specified partner.
+     *
+     * @param orderDTO the order details
+     * @return the created order response
+     * @throws PartnerNotFoundException if the partner does not exist
+     */
     @Transactional
-    public OrderResponseDTO createOrder(OrderPostRequestDTO orderDTO) {
+    public OrderResponseDTO createOrder(OrderPostRequestDTO orderDTO)  throws PartnerNotFoundException {
         log.info("Creating order for partner: {}", orderDTO.getPartnerId());
 
         Partner partner = partnerRepository.findById(orderDTO.getPartnerId())
@@ -58,8 +69,15 @@ public class OrderService {
         return new OrderResponseDTO(savedOrder);
     }
 
+    /**
+     * Retrieves an order by its ID.
+     *
+     * @param id the ID of the order
+     * @return the order response
+     * @throws OrderNotFoundException if the order does not exist
+     */
     @Cacheable(value = "orders", key = "#id")
-    public OrderResponseDTO getOrderById(UUID id) {
+    public OrderResponseDTO getOrderById(UUID id) throws OrderNotFoundException {
         log.info("Fetching order by ID: {}", id);
 
         Order order = orderRepository.findById(id)
@@ -68,9 +86,17 @@ public class OrderService {
         return new OrderResponseDTO(order);
     }
 
+    /**
+     * Updates the status of an existing order.
+     *
+     * @param id the ID of the order
+     * @param newStatus the new status to set
+     * @return the updated order response
+     * @throws OrderNotFoundException if the order does not exist
+     */
     @Transactional
     @CacheEvict(value = "orders", key = "#id")
-    public OrderResponseDTO updateOrderStatus(UUID id, Order.OrderStatus newStatus) {
+    public OrderResponseDTO updateOrderStatus(UUID id, Order.OrderStatus newStatus) throws OrderNotFoundException {
         log.info("Updating order {} status to {}", id, newStatus);
 
         Order order = orderRepository.findById(id)
@@ -98,9 +124,15 @@ public class OrderService {
         return new OrderResponseDTO(order);
     }
 
+    /**
+     * Cancels an existing order.
+     *
+     * @param id the ID of the order to cancel
+     * @throws OrderNotFoundException if the order does not exist
+     */
     @Transactional
     @CacheEvict(value = "orders", key = "#id")
-    public void cancelOrder(UUID id) {
+    public void cancelOrder(UUID id) throws OrderNotFoundException {
         log.info("Canceling order: {}", id);
 
         Order order = orderRepository.findById(id)
