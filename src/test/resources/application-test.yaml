@@ -1,0 +1,36 @@
+# Test configuration for Order App
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/testdb
+    username: test
+    password: test
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        use_sql_comments: true
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+# Test specific configurations
+logging:
+  level:
+    br.com.gazintech.orderapp: DEBUG
+    org.springframework.transaction: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+
+# Disable security for tests
+management:
+  security:
+    enabled: false
+
+order-app:
+  broadcast:
+    update-status: update-order-status
