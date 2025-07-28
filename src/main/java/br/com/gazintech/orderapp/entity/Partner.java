@@ -7,6 +7,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.UUID;
@@ -29,7 +30,7 @@ import java.util.UUID;
 @Table(name = "\"Partner\"", indexes = {
         @Index(name = "idx_partner_code", columnList = "code", unique = true)
 })
-public class Partner {
+public class Partner implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;

@@ -83,7 +83,7 @@ class CreditServiceTest {
                     PartnerNotFoundException.class,
                     () -> creditService.hasAvailableCredit(partnerId, amount)
             );
-            assertEquals("Partner not found: " + partnerId, exception.getMessage());
+            assertEquals("Partner not found " + partnerId, exception.getMessage());
             verify(partnerRepository).findById(partnerId);
         }
     }
