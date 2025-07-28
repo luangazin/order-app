@@ -28,6 +28,8 @@ import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 
+import static net.logstash.logback.argument.StructuredArguments.kv;
+
 @Tag(name = "Order Management", description = "Operations related to order management")
 @Slf4j
 @RequiredArgsConstructor
@@ -50,6 +52,7 @@ public class OrderController {
             @Parameter(name = "X-Idempotency-Key", description = "Idempotency key to safely retry requests", in = ParameterIn.HEADER, required = false, schema = @Schema(type = "string", format = "uuid"))
             @RequestHeader(name = "X-Idempotency-Key", required = true) UUID idempotencyKey,
             @Validated @RequestBody OrderPostRequestDTO orderPostRequestDTO) {
+        log.info("Creating new order", kv("idempotencyKey", idempotencyKey), kv("body", orderPostRequestDTO));
         log.debug("Received request to create order with idempotency key: {}", idempotencyKey);
         return br.com.gazintech.orderapp.api.ApiResponse.<OrderResponseDTO>builder()
                 .success()
@@ -74,8 +77,9 @@ public class OrderController {
             @Parameter(description = "Sort field") @RequestParam(name = "sort-by", defaultValue = "createdAt") String sortBy,
             @Parameter(description = "Sort direction") @RequestParam(name = "sort-direction", defaultValue = "DESC") SortDirection sortDirection) {
 
-        log.info("Searching orders with filters - status: {}, startDate: {}, endDate: {}",
-                status, startDate, endDate);
+
+        log.info("Searching orders with filters",
+                kv("status", status), kv("startDate", startDate), kv("endDate", endDate));
 
         OrderSearchDTO searchDTO = OrderSearchDTO.builder()
                 .orderId(orderId)
@@ -106,7 +110,7 @@ public class OrderController {
     @GetMapping("/{id}")
     public ResponseEntity<br.com.gazintech.orderapp.api.ApiResponse<OrderResponseDTO>> getOrderById(
             @Parameter(description = "Order id") @PathVariable UUID id) {
-        log.info("Fetching order by ID: {}", id);
+        log.info("Fetching order by ID", kv("orderId", id));
 
         return br.com.gazintech.orderapp.api.ApiResponse.<OrderResponseDTO>builder()
                 .success()
@@ -125,7 +129,7 @@ public class OrderController {
             @Parameter(description = "Order id") @PathVariable UUID id,
             @Parameter(description = "New status", required = true) @RequestParam Order.OrderStatus status) {
 
-        log.info("Updating order {} status to {}", id, status);
+        log.info("Updating order status", kv("orderId", id), kv("newStatus", status));
 
         return br.com.gazintech.orderapp.api.ApiResponse.<OrderResponseDTO>builder()
                 .success()
@@ -142,7 +146,7 @@ public class OrderController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> cancelOrder(
             @Parameter(description = "ID do pedido") @PathVariable UUID id) {
-        log.info("Canceling order: {}", id);
+        log.info("Canceling order", kv("orderId", id));
         orderService.cancelOrder(id);
         return ResponseEntity.noContent().build();
     }

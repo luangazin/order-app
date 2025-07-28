@@ -17,6 +17,10 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * Aspect for handling idempotency in methods annotated with @Idempotent.
+ * It checks if the request has an idempotency key and manages the cache accordingly.
+ */
 @RequiredArgsConstructor
 @Slf4j
 @Aspect
@@ -25,9 +29,19 @@ public class IdempotencyAspect {
 
     private final IdempotencyRepository repository;
 
+    /**
+     * Intercepts methods annotated with @Idempotent and handles idempotency logic.
+     * It checks if the idempotency key exists in the cache and returns the cached response if available.
+     * If not, it proceeds with the method execution and saves the response in the cache.
+     *
+     * @param joinPoint The join point representing the method execution.
+     * @return The response from the method or cached response if available.
+     * @throws Throwable If an error occurs during method execution.
+     */
     @Around("@annotation(Idempotent) && execution(* *(..))")
     public Object handleIdempotency(ProceedingJoinPoint joinPoint) throws Throwable {
         log.trace("Idempotency aspect triggered");
+        // Retrieve the method signature and the Idempotent annotation
         MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
         Idempotent idempotent = methodSignature.getMethod().getAnnotation(Idempotent.class);
         String idempotencyKeyHeader = this.getIdempotencyKeyHeader(idempotent);
@@ -57,6 +71,13 @@ public class IdempotencyAspect {
         return result;
     }
 
+    /**
+     * Retrieves the idempotency key from the request header.
+     * Throws an exception if the header is not found or if the request attributes are not available.
+     *
+     * @param idempotent The Idempotent annotation from the method.
+     * @return The idempotency key as a String.
+     */
     private String getIdempotencyKeyHeader(Idempotent idempotent) {
         if (idempotent == null) {
             throw new IllegalStateException("Idempotent annotation not found");

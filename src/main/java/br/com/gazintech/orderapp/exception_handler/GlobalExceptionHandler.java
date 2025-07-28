@@ -8,11 +8,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 /**
- * Created by IntelliJ IDEA.<br/>
- * User: luan-gazin<br/>
- * Date: 06/06/2025<br/>
- * Time: 10:55<br/>
- * To change this template use File | Settings | File Templates.
+ * Global exception handler for the application.
+ * This class intercepts exceptions thrown by controllers and returns a standardized API response.
+ * It uses an ExceptionHandlerList to find the appropriate response for each exception type.
  */
 @RestControllerAdvice
 public class GlobalExceptionHandler {

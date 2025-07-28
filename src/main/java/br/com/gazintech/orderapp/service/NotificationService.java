@@ -9,6 +9,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+/**
+ * Service for sending notifications about order status changes.
+ * This service is responsible for notifying partners when an order's status changes.
+ */
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -16,6 +20,12 @@ public class NotificationService {
     private final PartnerRepository partnerRepository;
     private final OrderStatusBroadcastSender broadcastSender;
 
+    /**
+     * Notifies the partner about the change in order status.
+     *
+     * @param order           The order for which the status has changed.
+     * @param previousStatus  The previous status of the order.
+     */
     @Async
     public void notifyOrderStatusChange(Order order, Order.OrderStatus previousStatus) {
         log.info("Sending notification for order {} status change from {} to {}",

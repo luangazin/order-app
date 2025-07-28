@@ -10,11 +10,11 @@ import java.time.ZoneOffset;
 import java.util.Optional;
 
 @Configuration
-@EnableJpaAuditing(dateTimeProviderRef = "auditingDateTimeProvider") // Point to your custom provider
+@EnableJpaAuditing(dateTimeProviderRef = "auditingDateTimeProvider")
 public class JpaAuditingConfiguration {
 
     @Bean(name = "auditingDateTimeProvider")
     public DateTimeProvider auditingDateTimeProvider() {
-        return () -> Optional.of(OffsetDateTime.now(ZoneOffset.UTC)); // Always use UTC for auditing
+        return () -> Optional.of(OffsetDateTime.now(ZoneOffset.UTC));
     }
 }

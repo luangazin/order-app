@@ -11,6 +11,10 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * Utility class to manage order status transitions.
+ * This class provides methods to check valid transitions and perform state changes on orders.
+ */
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class OrderStatusStateMachine {

@@ -1,5 +1,9 @@
 package br.com.gazintech.orderapp.exception_handler;
 
+/**
+ * Interface for managing a list of exception handlers.
+ * It provides methods to retrieve all exception handler items and to find a specific handler by exception type.
+ */
 public interface ExceptionHandlerList {
     /**
      * Returns a list of all exception handler items.

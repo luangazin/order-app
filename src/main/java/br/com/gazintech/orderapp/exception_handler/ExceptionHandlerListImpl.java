@@ -11,10 +11,21 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 
 import java.util.List;
 
+/**
+ * Implementation of ExceptionHandlerList that provides a list of exception handlers.
+ * It includes predefined exception handler items for various exceptions and their corresponding HTTP statuses.
+ */
 @Slf4j
 @Component("exceptionHandler")
 public class ExceptionHandlerListImpl implements ExceptionHandlerList {
 
+    /**
+     * Returns a list of exception handler items.
+     * Each item contains details about the exception, including error code, exception class, message, HTTP status,
+     * description, and whether to show the original message.
+     *
+     * @return List of ExceptionHandlerItem
+     */
     @Override
     public List<ExceptionHandlerItem> getExceptionHandler() {
         return List.of(
@@ -31,6 +42,13 @@ public class ExceptionHandlerListImpl implements ExceptionHandlerList {
         );
     }
 
+    /**
+     * Finds an exception handler item by the given exception.
+     * If no specific handler is found for the exception, a default handler is returned.
+     *
+     * @param exception The exception to find the handler for.
+     * @return ExceptionHandlerItem corresponding to the exception.
+     */
     @Override
     public ExceptionHandlerItem findByException(Throwable exception) {
         log.debug("Exception to be handled: %s".formatted(exception.getClass().getName()));
