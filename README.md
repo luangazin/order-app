@@ -84,4 +84,5 @@ http://localhost:8080/swagger-ui/index.html
 ``` 
 There is a swagger file in the project at root project `openapi-swagger.yaml` that can be used to import into Postman or any other API testing tool.
 
-
+> [!CAUTION]
+> Warning: Some issues may occur when viewing Swagger documentation in IntelliJ's built-in browser. For the best experience, please consider using the web version in your external browser.
