@@ -6,6 +6,7 @@ import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 
@@ -38,26 +39,20 @@ public class ExceptionHandlerListImpl implements ExceptionHandlerList {
                 new ExceptionHandlerItem("E007", PartnerNotFoundException.class, "Partner not found", HttpStatus.NOT_FOUND, "Partner not found", false),
                 new ExceptionHandlerItem("E008", OrderNotFoundException.class, "Order not found", HttpStatus.NOT_FOUND, "Order not found", false),
                 new ExceptionHandlerItem("E009", InvalidDataAccessApiUsageException.class, "Invalid body request", HttpStatus.BAD_REQUEST, "Invalid Body request", true),
-                new ExceptionHandlerItem("E010", MissingServletRequestParameterException.class, "Missing Request Parameter", HttpStatus.BAD_REQUEST, "Missing Request Parameter", true)
+                new ExceptionHandlerItem("E010", MissingServletRequestParameterException.class, "Missing Request Parameter", HttpStatus.BAD_REQUEST, "Missing Request Parameter", true),
+                new ExceptionHandlerItem("E011", MethodArgumentNotValidException.class, "Invalid argument", HttpStatus.BAD_REQUEST, "Invalid argument", true)
         );
     }
 
-    /**
-     * Finds an exception handler item by the given exception.
-     * If no specific handler is found for the exception, a default handler is returned.
-     *
-     * @param exception The exception to find the handler for.
-     * @return ExceptionHandlerItem corresponding to the exception.
-     */
     @Override
-    public ExceptionHandlerItem findByException(Throwable exception) {
-        log.debug("Exception to be handled: %s".formatted(exception.getClass().getName()));
+    public ExceptionHandlerItem findByClass(Class<? extends Throwable> exceptionClass) {
+        log.debug("Finding exception handler for class: {}", exceptionClass.getName());
         return getExceptionHandler().stream()
-                .filter(item -> item.exception().isInstance(exception))
+                .filter(item -> item.exception().equals(exceptionClass))
                 .findFirst()
                 .orElse(new ExceptionHandlerItem(
                         "E000",
-                        exception.getClass(),
+                        exceptionClass,
                         "An unexpected error occurred",
                         HttpStatus.INTERNAL_SERVER_ERROR,
                         "An unexpected error occurred while processing your request.",

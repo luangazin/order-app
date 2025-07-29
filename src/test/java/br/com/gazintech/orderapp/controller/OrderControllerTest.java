@@ -27,6 +27,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.context.WebApplicationContext;
@@ -148,7 +149,7 @@ class OrderControllerTest extends AbstractIntegrationTest {
                     ))
                     .build();
 
-            ExceptionHandlerItem exception = handlerList.findByException(new MissingRequestHeaderException("", null));
+            ExceptionHandlerItem exception = handlerList.findByClass(MissingRequestHeaderException.class);
 
             mockMvc.perform(post("/v1/orders")
                             .header("X-Idempotency-Key", "")
@@ -163,13 +164,18 @@ class OrderControllerTest extends AbstractIntegrationTest {
         }
 
         @Test
-        @DisplayName("Should return 400 when request body is invalid")
-        void shouldReturn400WhenRequestBodyInvalid() throws Exception {
+        @DisplayName("Should return 400 when request body validation fails")
+        void shouldReturn400WhenRequestBodyValidationFails() throws Exception {
             UUID idempotencyKey = UUID.randomUUID();
-            OrderPostRequestDTO invalidRequest = OrderPostRequestDTO.builder().build();
+            OrderPostRequestDTO invalidRequest = OrderPostRequestDTO.builder()
+                    .partnerId(null) // Missing partner ID
+                    .items(List.of(
+                            OrderPostRequestDTO.OrderItemDTO.builder().name("Item 1").code("001").quantity(0).price(BigDecimal.valueOf(5.54)).build() // Invalid quantity
+                    ))
+                    .build();
 
-            ExceptionHandlerItem exception = handlerList.findByException(new InvalidDataAccessApiUsageException("", null));
-            // When & Then
+            ExceptionHandlerItem exception = handlerList.findByClass(MethodArgumentNotValidException.class);
+
             mockMvc.perform(post("/v1/orders")
                             .header("X-Idempotency-Key", idempotencyKey.toString())
                             .contentType(MediaType.APPLICATION_JSON)
@@ -178,7 +184,6 @@ class OrderControllerTest extends AbstractIntegrationTest {
                     .andExpect(status().isBadRequest())
                     .andExpect(jsonPath("$.status", is(ApiResponse.Status.ERROR.name())))
                     .andExpect(jsonPath("$.error-code", is(exception.errorCode())));
-
         }
     }
 
@@ -307,7 +312,7 @@ class OrderControllerTest extends AbstractIntegrationTest {
         @DisplayName("Should return 404 when order not found")
         void shouldReturn404WhenOrderNotFound() throws Exception {
             UUID nonExistentId = UUID.randomUUID();
-            ExceptionHandlerItem exception = handlerList.findByException(new OrderNotFoundException(""));
+            ExceptionHandlerItem exception = handlerList.findByClass(OrderNotFoundException.class);
             mockMvc.perform(get("/v1/orders/{id}", nonExistentId))
                     .andDo(print())
                     .andExpect(status().isNotFound())
@@ -359,7 +364,7 @@ class OrderControllerTest extends AbstractIntegrationTest {
         @DisplayName("Should return 400 when status parameter is missing")
         void shouldReturn400WhenStatusParameterMissing() throws Exception {
             UUID orderId = UUID.randomUUID();
-            ExceptionHandlerItem exception = handlerList.findByException(new MissingServletRequestParameterException("", null));
+            ExceptionHandlerItem exception = handlerList.findByClass(MissingServletRequestParameterException.class);
             mockMvc.perform(patch("/v1/orders/{id}/status", orderId))
                     .andDo(print())
                     .andExpect(status().isBadRequest())
@@ -406,7 +411,7 @@ class OrderControllerTest extends AbstractIntegrationTest {
             // Given
             UUID nonExistentId = UUID.randomUUID();
 
-            ExceptionHandlerItem exception = handlerList.findByException(new OrderNotFoundException(""));
+            ExceptionHandlerItem exception = handlerList.findByClass(OrderNotFoundException.class);
 
             mockMvc.perform(delete("/v1/orders/{id}", nonExistentId))
                     .andDo(print())
@@ -433,7 +438,7 @@ class OrderControllerTest extends AbstractIntegrationTest {
 
             item.setOrder(orderTest);
             Order saved = orderRepository.save(orderTest);
-            ExceptionHandlerItem exception = handlerList.findByException(new InvalidOrderStatusException(""));
+            ExceptionHandlerItem exception = handlerList.findByClass(InvalidOrderStatusException.class);
             mockMvc.perform(delete("/v1/orders/{id}", saved.getId()))
                     .andDo(print())
                     .andExpect(status().isBadRequest())
