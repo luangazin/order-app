@@ -15,6 +15,7 @@ import br.com.gazintech.orderapp.utils.OrderStatusStateMachine;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -95,7 +96,7 @@ public class OrderService {
      * @throws OrderNotFoundException if the order does not exist
      */
     @Transactional
-    @CacheEvict(value = "orders", key = "#id")
+    @CachePut(value = "orders", key = "#id")
     public OrderResponseDTO updateOrderStatus(UUID id, Order.OrderStatus newStatus) throws OrderNotFoundException {
         log.info("Updating order {} status to {}", id, newStatus);
 
@@ -131,7 +132,7 @@ public class OrderService {
      * @throws OrderNotFoundException if the order does not exist
      */
     @Transactional
-    @CacheEvict(value = "orders", key = "#id")
+    @CachePut(value = "orders", key = "#id")
     public void cancelOrder(UUID id) throws OrderNotFoundException {
         log.info("Canceling order: {}", id);
 

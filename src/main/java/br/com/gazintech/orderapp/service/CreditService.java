@@ -34,8 +34,7 @@ public class CreditService {
      * @throws PartnerNotFoundException     if the partner does not exist
      * @throws InsufficientBalanceException if the partner does not have enough credit
      */
-    @Cacheable(value = "partner-credit", key = "#partnerId")
-    public Partner hasAvailableCredit(UUID partnerId, BigDecimal amount) throws PartnerNotFoundException, InsufficientBalanceException {
+    public void hasAvailableCredit(UUID partnerId, BigDecimal amount) throws PartnerNotFoundException, InsufficientBalanceException {
         log.info("Checking available Partner credit", kv("partnerId", partnerId), kv("amount", amount));
 
         Partner partner = partnerRepository.findById(partnerId)
@@ -46,7 +45,6 @@ public class CreditService {
         if (!hasCredit) {
             throw new InsufficientBalanceException("Insufficient credit for partner: %s".formatted(partner.getCode()));
         }
-        return partner;
     }
 
     /**
@@ -58,8 +56,7 @@ public class CreditService {
      * @throws InsufficientBalanceException if the partner does not have enough credit
      */
     @Transactional
-    @Cacheable(value = "partner-credit", key = "#partnerId")
-    public Partner debitCredit(UUID partnerId, BigDecimal amount) throws PartnerNotFoundException, InsufficientBalanceException {
+    public void debitCredit(UUID partnerId, BigDecimal amount) throws PartnerNotFoundException, InsufficientBalanceException {
         log.info("Debiting credit for partner {} amount {}", partnerId, amount);
 
         Partner partner = partnerRepository.findByIdWithLock(partnerId)
@@ -70,11 +67,10 @@ public class CreditService {
         }
 
         partner.debitCredit(amount);
-        Partner saved = partnerRepository.save(partner);
+        partnerRepository.save(partner);
 
         log.info("Credit debited successfully for partner {} new available credit: {}",
                 partnerId, partner.getAvailableCredit());
-        return saved;
     }
 
     /**
@@ -85,19 +81,17 @@ public class CreditService {
      * @throws PartnerNotFoundException if the partner does not exist
      */
     @Transactional
-    @Cacheable(value = "partner-credit", key = "#partnerId")
-    public Partner creditCredit(UUID partnerId, BigDecimal amount) throws PartnerNotFoundException {
+    public void creditCredit(UUID partnerId, BigDecimal amount) throws PartnerNotFoundException {
         log.info("Crediting credit for partner {} amount {}", partnerId, amount);
 
         Partner partner = partnerRepository.findByIdWithLock(partnerId)
                 .orElseThrow(() -> new PartnerNotFoundException("Partner not found: " + partnerId));
 
         partner.creditCredit(amount);
-        Partner saved = partnerRepository.save(partner);
+        partnerRepository.save(partner);
 
         log.info("Credit credited successfully for partner {} new available credit: {}",
                 partnerId, partner.getAvailableCredit());
-        return saved;
     }
 
     /**
@@ -107,7 +101,6 @@ public class CreditService {
      * @return the available credit amount
      * @throws PartnerNotFoundException if the partner does not exist
      */
-    @Cacheable(value = "partner-credit", key = "#partnerId + '-info'")
     public BigDecimal getAvailableCredit(UUID partnerId) throws PartnerNotFoundException {
         log.info("Getting available credit for partner {}", partnerId);
 
@@ -122,12 +115,10 @@ public class CreditService {
      *
      * @param partnerId the ID of the partner
      * @param newLimit  the new credit limit
-     * @return the updated partner entity
      * @throws PartnerNotFoundException if the partner does not exist
      */
     @Transactional
-    @Cacheable(value = "partner-credit", key = "#partnerId")
-    public Partner updateCreditLimit(UUID partnerId, BigDecimal newLimit) throws PartnerNotFoundException {
+    public void updateCreditLimit(UUID partnerId, BigDecimal newLimit) throws PartnerNotFoundException {
         log.info("Updating credit limit for partner {} to {}", partnerId, newLimit);
 
         Partner partner = partnerRepository.findByIdWithLock(partnerId)
@@ -145,6 +136,6 @@ public class CreditService {
 
         log.info("Credit limit updated for partner {} new limit: {} new available: {}",
                 partnerId, newLimit, partner.getAvailableCredit());
-        return saved;
+
     }
 }
