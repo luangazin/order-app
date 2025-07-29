@@ -74,9 +74,13 @@ To stop and remove all data (including volumes):
 ```bash
 docker compose --profile complete down -v
 ```
-# Calling the API
-Applciation already has a Partner created with id `1ffe19fd-cb50-4afe-b4cf-07aa691631df`.
 
+### Initial Data
+
+The application comes with a pre-created Partner for testing:
+- Partner ID: `1ffe19fd-cb50-4afe-b4cf-07aa691631df`
+
+This Partner can be used for testing order creation and other API operations.
 You can test the API using swagger UI at:
 
 ```

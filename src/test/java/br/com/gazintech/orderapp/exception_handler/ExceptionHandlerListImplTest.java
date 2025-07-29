@@ -23,8 +23,7 @@ class ExceptionHandlerListImplTest {
 
     @Test
     void findByException_WhenExceptionExists_ShouldReturnCorrectHandler() {
-        var orderNotFoundException = new OrderNotFoundException("Order not found");
-        var handler = exceptionHandlerList.findByException(orderNotFoundException);
+        var handler = exceptionHandlerList.findByClass(OrderNotFoundException.class);
 
         assertEquals("E008", handler.errorCode());
         assertEquals(OrderNotFoundException.class, handler.exception());
@@ -32,9 +31,8 @@ class ExceptionHandlerListImplTest {
     }
 
     @Test
-    void findByException_WhenExceptionDoesNotExist_ShouldReturnDefaultHandler() {
-        var unknownException = new RuntimeException("Unknown error");
-        var handler = exceptionHandlerList.findByException(unknownException);
+    void findByClass_WhenExceptionDoesNotExist_ShouldReturnDefaultHandler() {
+        var handler = exceptionHandlerList.findByClass(RuntimeException.class);
 
         assertEquals("E000", handler.errorCode());
         assertEquals(RuntimeException.class, handler.exception());
@@ -43,9 +41,8 @@ class ExceptionHandlerListImplTest {
     }
 
     @Test
-    void findByException_WithHttpRequestMethodNotSupportedException_ShouldReturnCorrectHandler() {
-        var methodNotSupportedException = new HttpRequestMethodNotSupportedException("POST");
-        var handler = exceptionHandlerList.findByException(methodNotSupportedException);
+    void findByClass_WithHttpRequestMethodNotSupportedException_ShouldReturnCorrectHandler() {
+        var handler = exceptionHandlerList.findByClass(HttpRequestMethodNotSupportedException.class);
 
         assertEquals("E005", handler.errorCode());
         assertEquals(HttpStatus.METHOD_NOT_ALLOWED, handler.status());
@@ -53,9 +50,8 @@ class ExceptionHandlerListImplTest {
     }
 
     @Test
-    void findByException_WithMissingRequestHeaderException_ShouldReturnCorrectHandler() {
-        var missingHeaderException = new MissingRequestHeaderException("X-Required-Header", null);
-        var handler = exceptionHandlerList.findByException(missingHeaderException);
+    void findByClass_WithMissingRequestHeaderException_ShouldReturnCorrectHandler() {
+        var handler = exceptionHandlerList.findByClass(MissingRequestHeaderException.class);
 
         assertEquals("E006", handler.errorCode());
         assertEquals(HttpStatus.BAD_REQUEST, handler.status());

@@ -147,3 +147,9 @@ The application includes Spring Boot Actuator for monitoring. Key metrics are av
 - http://localhost:8080/actuator/metrics
 - http://localhost:8080/actuator/health
 
+### Initial Data
+
+The application comes with a pre-created Partner for testing:
+- Partner ID: `1ffe19fd-cb50-4afe-b4cf-07aa691631df`
+
+This Partner can be used for testing order creation and other API operations.
