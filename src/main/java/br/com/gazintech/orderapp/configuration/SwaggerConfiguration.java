@@ -5,6 +5,7 @@ import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
 import io.swagger.v3.oas.models.servers.Server;
+import org.springdoc.core.customizers.OpenApiCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -30,5 +31,20 @@ public class SwaggerConfiguration {
                 .servers(List.of(
                         new Server().url("http://localhost:8080").description("Local Server")
                 ));
+    }
+
+    @Bean
+    public OpenApiCustomizer openApiCustomizer() {
+        return openApi -> openApi.getPaths().values().forEach(pathItem ->
+                pathItem.readOperations().forEach(operation -> {
+                    operation.getResponses().entrySet().removeIf(entry ->
+                            !entry.getKey().equals("200") &&
+                                    !entry.getKey().equals("201") &&
+                                    !entry.getKey().equals("400") &&
+                                    !entry.getKey().equals("404") &&
+                                    !entry.getKey().equals("418") &&
+                                    !entry.getKey().equals("500"));
+                })
+        );
     }
 }

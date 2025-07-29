@@ -10,8 +10,8 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/order_app
-      - SPRING_REDIS_HOST=redis
-      - LOGGING_STRUCTURED_FORMAT_CONSOLE=ecs
+      - SPRING_DATA_REDIS_HOST=redis
+      - SPRING_DATA_REDIS_PORT=6379
     ports:
       - "8080:8080"
     depends_on:

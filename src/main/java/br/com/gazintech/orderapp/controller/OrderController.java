@@ -49,7 +49,7 @@ public class OrderController {
     @Idempotent(cacheTimeSeconds = 3600)
     @PostMapping
     public ResponseEntity<br.com.gazintech.orderapp.api.ApiResponse<OrderResponseDTO>> createOrder(
-            @Parameter(name = "X-Idempotency-Key", description = "Idempotency key to safely retry requests", in = ParameterIn.HEADER, required = false, schema = @Schema(type = "string", format = "uuid"))
+            @Parameter(name = "X-Idempotency-Key", description = "Idempotency key to safely retry requests", in = ParameterIn.HEADER, required = false, schema = @Schema(type = "string", format = "uuid", example = "658c7182-95ce-4b34-b912-2fba2f3bab5e"))
             @RequestHeader(name = "X-Idempotency-Key", required = true) UUID idempotencyKey,
             @Validated @RequestBody OrderPostRequestDTO orderPostRequestDTO) {
         log.info("Creating new order", kv("idempotencyKey", idempotencyKey), kv("body", orderPostRequestDTO));

@@ -12,7 +12,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-@Profile("local")
+@Profile({"local", "docker"})
 @Configuration
 public class InitLocalDatabase {
 
